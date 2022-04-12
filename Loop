@@ -1,0 +1,206 @@
+#include <iostream>
+
+using namespace std;
+ class node{
+ 
+     public:
+        int data;
+        node * next;
+     
+ };
+ 
+// This function is for inserting values in a Linked list , depending on user choice 
+
+node * create_LL(node * head){
+    
+    node * temp = NULL ; 
+    node * new_node =NULL;
+    int choice = 1;
+    
+    while(choice==1){
+    
+    new_node = new node();
+  
+    cout<<"Enter the value to insert in Linked List"<<endl;
+    cin>>new_node->data;
+    
+    new_node->next = NULL;
+    
+    if(head==NULL){
+        
+    head=temp=new_node;
+    
+    }
+    else
+    {
+       temp->next=new_node;
+       temp =new_node;
+        
+    }
+    cout<< "enter 1 to continue "<<endl;
+    cin>>choice;
+      
+}
+
+return(head);
+
+}
+
+// To print Linked List
+
+void print(node * n){
+     
+     cout<<"\n"<<"Values in LINKED LIST"<<endl;
+     
+     while(n!=NULL){
+     
+     cout << n->data <<endl;
+     n=n->next;
+     
+     }
+ }
+
+// loop_detection() function will detect any loop in a Linked List
+// Logic used to detect loop : Slow and fast pointer
+// Function will return the node where fast and slow meets
+
+node* loop_detection(node *head)
+ {
+     node * slow = head;
+     node * fast = head;
+     
+     while(fast != NULL && fast->next != NULL){
+     
+         slow=slow->next;
+         fast=fast->next->next;
+         
+         // if fast pointer will coincides with slow then 
+         // it means loop is there
+         
+         if(fast == slow)
+         {
+             // we can return slow also , as both are same
+             
+             return fast; 
+         }
+     }
+     
+     return 0;
+     
+ }
+
+// cycle_strt_node( ) will return the starting node of the loop 
+// Concept used : Fix one pointer where slow and fast pointer meet in 
+// loop_detection( ) and fix one another pointer at head node of Linked list.
+// Move this both pointer one by one , the node at which the both pointer meet
+// is the loop start node
+
+node * cycle_strt_node(node *head,node *meet_node){
+    
+    node *start= head;
+   
+    while(start != meet_node)
+    {
+    
+        // Increase both pointer by one location and wait for them to meet
+        
+        start=start->next;
+        meet_node=meet_node->next;
+    }
+    
+    // You  can return start also because both are same
+    return meet_node ; 
+}
+
+// detect_And_remove_loop() function will call 2 functions loop_detection()
+// and cycle_strt_node (). Once loop_detection() will return the meet_node
+// , confirming loop in the Linked list. 
+// Then we will remove loop by assigning next of last node of loop  to NULL.
+
+void detect_And_remove_loop(node *head)
+{
+
+   //Loop detection
+   // Meeting node of fast and slow , returned by loop_detection function
+   
+    node *meet_node= loop_detection(head);
+    
+    if(meet_node)
+    {
+       cout<<"Loop detected"<<endl;
+       
+       // Printing the cycle_strt_node
+      
+       cout<<"the cycle starts at "<< cycle_strt_node(head,meet_node)->data<<endl;
+                   
+       // This check is needed when both pointer meet at head of LL
+       // also when loop start from head , meet pointer also meet at head only
+       
+       if (meet_node == head)
+       {
+                      
+           // This loop will stop one pointer back from start node
+           
+           while(meet_node->next!=head)
+                {
+                 meet_node=meet_node->next;
+                }
+        }
+         else
+         {
+         // normal case
+         // this loop will stop one pointer back from start node. THIS Will help us to delete
+         // the loop
+         
+             while(head->next != meet_node->next)
+             {
+                     
+                 head=head->next;
+                 meet_node=meet_node->next;
+                       
+              }
+          }
+                   
+       node * prev_from_strt =meet_node ;
+                   
+       // Removing loop by giving NUll to end of Loop
+          prev_from_strt->next = NULL;
+        }
+   else
+   {
+        cout<<"No Loops"<<endl;
+   }
+   
+}
+
+
+int main()
+{
+    node * head= NULL;
+
+   head= create_LL(head);
+   print(head);
+   
+   // Making loop in ll
+  node *temp=head;
+   
+  while(temp->next != NULL){
+      temp=temp->next;
+  }
+  
+  // Looping from 3rd node
+  
+  temp->next=head->next->next; 
+   
+// This function will detect loop and if loop 
+// exist in Linked List , then it will remove the loop
+
+detect_And_remove_loop(head);
+
+cout<<"AFTER REMOVING LOOP : LL" <<endl;
+
+print (head);
+    
+    return 0;
+
+}
